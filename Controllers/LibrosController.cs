@@ -24,8 +24,11 @@ namespace LibrosVentaAspnet5.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Libro>>> GetLibros()
         {
+            // Default
             // return await _context.Libros.ToListAsync();
-            return await _context
+
+            // LINQ Method syntax
+            var crudo =_context
                 .Libros
                 .Join(
                     _context.Clientes,
@@ -34,10 +37,25 @@ namespace LibrosVentaAspnet5.Controllers
                     (libro, cliente) => new Libro {
                         Id = libro.Id,
                         Nombre = libro.Nombre,
+                        ClienteId = libro.ClienteId,
                         Cliente = cliente
                     }
-                )
-                .ToListAsync();
+                );
+
+            // LINQ Query syntax
+            // var crudo = from libro in _context.Set<Libro>()
+            //     join cliente in _context.Set<Cliente> ()
+            //         on libro.ClienteId equals cliente.Id
+            //     select new Libro {
+            //         Id = libro.Id,
+            //         Nombre = libro.Nombre,
+            //         ClienteId = libro.ClienteId,
+            //         Cliente = cliente
+            //     };
+
+            var lista = await crudo.ToListAsync();
+
+            return lista;
         }
 
         // GET: api/Libros/5
